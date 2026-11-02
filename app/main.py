@@ -14,7 +14,7 @@ from alembic.config import Config
 from fastapi import FastAPI, Depends 
 from sqlalchemy.orm import Session 
 
-from app.database import get_db, engine, DATABASE_URL
+from app.database import get_db
 from app.model import User, Role 
 
 logging.basicConfig(level=logging.INFO) 

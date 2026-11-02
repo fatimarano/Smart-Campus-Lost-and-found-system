@@ -1,0 +1,108 @@
+erDiagram
+    USERS {
+        int id PK
+        varchar username UK
+        varchar email UK
+        varchar password_hash
+        boolean is_active
+    }
+    ROLES {
+        int id PK
+        varchar name UK
+    }
+    PERMISSIONS {
+        int id PK
+        varchar code UK
+    }
+    USER_ROLE {
+        int user_id PK, FK
+        int role_id PK, FK
+        datetime granted_at
+        int granted_by_user_id FK
+    }
+    ROLE_PERMISSION {
+        int role_id PK, FK
+        int permission_id PK, FK
+        datetime granted_at
+    }
+    CAMPUSES {
+        int id PK
+        varchar code UK
+        varchar name
+    }
+    LOCATIONS {
+        int id PK
+        int campus_id FK
+        int parent_location_id FK
+        varchar name
+        varchar location_type
+    }
+    CATEGORIES {
+        int id PK
+        int parent_category_id FK
+        varchar name UK
+    }
+    ITEM_REPORTS {
+        int id PK
+        varchar report_type
+        varchar status
+        int reporter_user_id FK
+        int category_id FK
+        int location_id FK
+        varchar title
+    }
+    ITEM_REPORT_PHOTOS {
+        int id PK
+        int report_id FK
+        varchar storage_key UK
+    }
+    ITEM_CLAIMS {
+        int id PK
+        int report_id FK
+        int claimant_user_id FK
+        varchar status
+        int reviewed_by_user_id FK
+    }
+    REPORT_MATCHES {
+        int id PK
+        int lost_report_id FK
+        int found_report_id FK
+        varchar status
+        decimal confidence_score
+    }
+    NOTIFICATIONS {
+        int id PK
+        int recipient_user_id FK
+        int report_id FK
+        datetime read_at
+    }
+    AUDIT_LOGS {
+        int id PK
+        int actor_user_id FK
+        varchar action
+        varchar entity_type
+        int entity_id
+        datetime created_at
+    }
+
+    USERS ||--o{ USER_ROLE : receives
+    ROLES ||--o{ USER_ROLE : assigned
+    USERS o|--o{ USER_ROLE : grants
+    ROLES ||--o{ ROLE_PERMISSION : includes
+    PERMISSIONS ||--o{ ROLE_PERMISSION : assigned
+    CAMPUSES ||--o{ LOCATIONS : contains
+    LOCATIONS o|--o{ LOCATIONS : parent_of
+    CATEGORIES o|--o{ CATEGORIES : parent_of
+    USERS ||--o{ ITEM_REPORTS : reports
+    CATEGORIES ||--o{ ITEM_REPORTS : classifies
+    LOCATIONS o|--o{ ITEM_REPORTS : locates
+    ITEM_REPORTS ||--o{ ITEM_REPORT_PHOTOS : has
+    ITEM_REPORTS ||--o{ ITEM_CLAIMS : receives
+    USERS ||--o{ ITEM_CLAIMS : submits
+    USERS o|--o{ ITEM_CLAIMS : reviews
+    ITEM_REPORTS ||--o{ REPORT_MATCHES : lost_side
+    ITEM_REPORTS ||--o{ REPORT_MATCHES : found_side
+    USERS o|--o{ REPORT_MATCHES : proposes
+    USERS ||--o{ NOTIFICATIONS : receives
+    ITEM_REPORTS o|--o{ NOTIFICATIONS : concerns
+    USERS o|--o{ AUDIT_LOGS : acts
